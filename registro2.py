@@ -1,0 +1,380 @@
+class Cliente:
+    def __init__(self, nombre, codigo_cliente, telefono):
+        self._nombre = nombre
+        self._codigo_cliente = codigo_cliente
+        self._telefono = telefono
+class Plato:
+    def __init__(self, nombre, precio):
+        self._nombre = nombre
+        self._precio = precio
+class Pedido:
+    def __init__(self, cliente, codigo):
+        self._cliente = cliente
+        self._platos = []
+        self._codigo = codigo
+class Restaurante:
+    def __init__(self, nombre):
+        self._nombre = nombre
+        self._pedidos = []
+class Extra:
+    def __init__(self, nombre, precio):
+        self.nombre = nombre
+        self.precio = precio
+class Mesa:
+    def __init__(self, numero, capacidad):
+        self._numero = numero
+        self._capacidad = capacidad
+        self._ocupada = False
+platos = [
+    Plato("1 Pollo a la brasa", 60),
+    Plato("1/2 pollo", 32),
+    Plato("1/4 de pollo", 18),
+    Plato("1/8 de pollo", 14),
+    Plato("1 Cubeta de pollo broaster", 60),
+    Plato("Mini cubeta de pollo broaster", 30),
+    Plato("Big crunch", 15),
+    Plato("Menu universitario", 12)
+]
+extras = [
+    Extra("Porción de papas", 10),
+    Extra("Limonada", 2),
+    Extra("Chicha morada", 3),
+    Extra("Ensalada", 5),
+    Extra("Gaseosa 1L", 10),
+    Extra("Gaseosa 1/2L", 8),
+    Extra("Gaseosa personal", 2)
+]
+mesas = [
+    Mesa(1, 2),
+    Mesa(2, 2),
+    Mesa(3, 4),
+    Mesa(4, 4),
+    Mesa(5, 4),
+    Mesa(6, 6),
+    Mesa(7, 6),
+    Mesa(8, 8)
+]
+clientes = []
+restaurante = Restaurante("Los Pollos Hermanos")
+def mostrar_mesas(titulo, ocupadas):
+    lista = [m for m in mesas if m._ocupada == ocupadas]
+    if len(lista) == 0:
+        if ocupadas:
+            print("\nNo hay mesas ocupadas.")
+        else:
+            print("\nNo hay mesas disponibles.")
+        return lista
+    estado = "OCUPADA" if ocupadas else "LIBRE"
+    print("\n╔" + "═" * 52 + "╗")
+    print(f"║{'LOS POLLOS HERMANOS':^52}║")
+    print(f"║{titulo:^52}║")
+    print("╠" + "═" * 52 + "╣")
+    print(f"║   {'N.°':<6}{'CAPACIDAD':<30}{'ESTADO':>10}   ║")
+    print("╠" + "═" * 52 + "╣")
+    for m in lista:
+        capacidad = f"{m._capacidad} personas"
+        print(f"║   {m._numero:<6}{capacidad:<30}{estado:>10}   ║")
+    print("╚" + "═" * 52 + "╝")
+    return lista
+def consultar_mesas():
+    mostrar_mesas("MESAS DISPONIBLES", False)
+def elegir_mesa():
+    disponibles = mostrar_mesas("MESAS DISPONIBLES", False)
+    if len(disponibles) == 0:
+        return None
+    while True:
+        numero = int(input("Seleccione el número de la mesa: "))
+        for mesa in disponibles:
+            if mesa._numero == numero:
+                return mesa
+        print("La mesa seleccionada no existe o está ocupada.")
+def liberar_mesa():
+    ocupadas = mostrar_mesas("MESAS OCUPADAS", True)
+    if len(ocupadas) == 0:
+        return
+    numero = int(input("Ingrese el número de la mesa a liberar (0 para cancelar): "))
+    if numero == 0:
+        return
+    for mesa in ocupadas:
+        if mesa._numero == numero:
+            mesa._ocupada = False
+            print(f"Mesa {numero} liberada correctamente.")
+            return
+    print("La mesa indicada no está ocupada o no existe.")
+def seleccionar_opcion():
+    print("""
+╔════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                                ║
+║                         BIENVENIDO AL SISTEMA DEL RESTAURANTE                                  ║
+║                                                                                                ║
+║   ╔────────────────────────────────────────────────────────────────────────────────────────╗   ║
+║   │                                                                                        │   ║
+║   │   1. Registrar cliente ..................................... Seleccione (N. 1)         │   ║
+║   │   2. Realizar pedido ....................................... Seleccione (N. 2)         │   ║
+║   │   3. Consultar pedido ...................................... Seleccione (N. 3)         │   ║
+║   │   4. Consultar mesas disponibles .......................... Seleccione (N. 4)          │   ║
+║   │   5. Listar y ordenar información ......................... Seleccione (N. 5)          │   ║
+║   │   6. Liberar mesa .......................................... Seleccione (N. 6)         │   ║
+║   │   7. Mostrar historial de ventas ........................... Seleccione (N. 7)         │   ║
+║   │   8. Salir ................................................. Seleccione (N. 8)         │   ║
+║   │                                                                                        │   ║
+║   ╚────────────────────────────────────────────────────────────────────────────────────────╝   ║
+║                                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════╝
+""")
+    opcion = int(input("Seleccione una opción: "))
+    match opcion:
+        case 1:
+            registro_cliente()
+        case 2:
+            toma_pedido()
+        case 3:
+            consultar_pedido()
+        case 4:
+            consultar_mesas()
+        case 5:
+            print("Opción pendiente")
+        case 6:
+            liberar_mesa()
+        case 7:
+            historial_ventas()
+        case 8:
+            print("Gracias por utilizar nuestro sistema.")
+            return False
+        case _:
+            print("Opción incorrecta.")
+    return True
+    
+def registro_cliente():
+    print("""
+╔═════════════════════════════════════════════╗
+║   REGISTRO DE CLIENTE/LOS POLLOS HERMANOS   ║
+╚═════════════════════════════════════════════╝
+""")
+    nombre = input("Ingresar nombre del cliente: ")
+    codigo_cliente = int(input("Asignar un código: "))
+    telefono = input("Ingresar número de contacto: ")
+    for cliente in clientes:
+        if cliente._codigo_cliente == codigo_cliente:
+            print("Este codigo ya a sido registrado")
+            return
+    cliente = Cliente(nombre, codigo_cliente, telefono)
+    clientes.append(cliente)
+    print("Cliente registrado correctamente.")
+
+def mostrar_menu(pedido_actual):
+    while True:
+        print("""
+╔════════════════════════════════════════════════════╗
+║              LOS POLLOS HERMANOS                   ║
+║                   MENÚ DE PLATOS                   ║
+╠════════════════════════════════════════════════════╣
+║  N.°   PLATO                              PRECIO   ║
+╠════════════════════════════════════════════════════╣
+║   1.   1 Pollo a la brasa                 S/ 60.00 ║
+║   2.   1/2 pollo                          S/ 32.00 ║
+║   3.   1/4 de pollo                       S/ 18.00 ║
+║   4.   1/8 de pollo                       S/ 14.00 ║
+║   5.   1 Cubeta de pollo broaster         S/ 60.00 ║
+║   6.   Mini cubeta de pollo broaster      S/ 30.00 ║
+║   7.   Big crunch                         S/ 15.00 ║
+║   8.   Menú universitario                 S/ 12.00 ║
+╠════════════════════════════════════════════════════╣
+║   9.   Ver menú de extras                          ║
+║   0.   Terminar selección de platos                ║
+╚════════════════════════════════════════════════════╝
+""")
+        plato_seleccionado = int(input("Seleccione una opción (0-9): "))
+        if plato_seleccionado == 0:
+            if len(pedido_actual) == 0:
+                print("Primero debe seleccionar un plato.")
+            else:
+                break
+        elif plato_seleccionado == 9:
+            while True:
+                print("""
+╔════════════════════════════════════════════════════╗
+║              LOS POLLOS HERMANOS                   ║
+║                    MENÚ DE EXTRAS                  ║
+╠════════════════════════════════════════════════════╣
+║  N.°   EXTRA                              PRECIO   ║
+╠════════════════════════════════════════════════════╣
+║   1.   Porción de papas                    S/ 10.00║
+║   2.   Limonada                            S/  2.00║
+║   3.   Chicha morada                       S/  3.00║
+║   4.   Ensalada                            S/  5.00║
+║   5.   Gaseosa 1L                          S/ 10.00║
+║   6.   Gaseosa 1/2L                        S/  8.00║
+║   7.   Gaseosa personal                    S/  2.00║
+╠════════════════════════════════════════════════════╣
+║   0.   Volver al menú de platos                    ║
+╚════════════════════════════════════════════════════╝
+""")
+                opcion_extra = int(input("Seleccione un extra (0-7): "))
+                if opcion_extra == 0:
+                    break
+                elif 1 <= opcion_extra <= len(extras):
+                    cant_extra = int(input("Indique la cantidad: "))
+                    if cant_extra > 0:
+                        extra = extras[opcion_extra - 1]
+                        subtotal = extra.precio * cant_extra
+                        pedido_actual.append((extra, cant_extra, subtotal))
+                        print("\nEXTRA SELECCIONADO")
+                        print(f"Extra: {extra.nombre}")
+                        print(f"Cantidad: {cant_extra}")
+                        print(f"Subtotal: S/{subtotal:.2f}")
+                        print("\nExtra agregado correctamente.")
+                    else:
+                        print("La cantidad debe ser mayor a cero.")
+                else:
+                    print("El extra seleccionado no existe.")
+        elif 1 <= plato_seleccionado <= len(platos):
+            cant_plato = int(input("Indique la cantidad: "))
+            if cant_plato > 0:
+                plato = platos[plato_seleccionado - 1]
+                subtotal = plato._precio * cant_plato
+                pedido_actual.append((plato, cant_plato, subtotal))
+                print("\nPLATO SELECCIONADO")
+                print(f"Plato: {plato._nombre}")
+                print(f"Cantidad: {cant_plato}")
+                print(f"Subtotal: S/{subtotal:.2f}")
+                print("\nPlato agregado correctamente.")
+            else:
+                print("La cantidad debe ser mayor a cero.")
+        else:
+            print("El plato seleccionado no existe.")
+def buscar_cliente(codigo):
+    for cliente in clientes:
+        if cliente._codigo_cliente == codigo:
+            return cliente
+    return None
+def toma_pedido():
+    print("""
+╔════════════════════════════════════════════════════╗
+║                   TOMA DE PEDIDO                   ║
+╚════════════════════════════════════════════════════╝
+""")
+    if len(clientes) == 0:
+        print("Primero debe registrar un cliente.")
+        return
+    print("CLIENTES REGISTRADOS")
+    for cliente in clientes:
+        print(
+            f"Código: {cliente._codigo_cliente} | "
+            f"Nombre: {cliente._nombre}"
+        )
+    codigo_cliente = int(input("\nIngrese el código del cliente: "))
+    cliente_encontrado = buscar_cliente(codigo_cliente)
+    if cliente_encontrado is None:
+        print("No se encontró al cliente.")
+        return
+    mesa_elegida = elegir_mesa()
+    if mesa_elegida is None:
+        print("No hay mesas disponibles por el momento.")
+        return
+    pedido_actual = []
+    mostrar_menu(pedido_actual)
+    print("""
+╔════════════════════════════════════════════════════╗
+║              RESUMEN DEL PEDIDO                    ║
+╚════════════════════════════════════════════════════╝
+""")
+    total = 0
+    for plato, cantidad, subtotal in pedido_actual:
+        if isinstance(plato, Extra):
+            print(f"Extra: {plato.nombre}")
+        else:
+            print(f"Plato: {plato._nombre}")
+            print(f"Cantidad: {cantidad}")
+            print(f"Subtotal: S/ {subtotal:.2f}")
+            print("--------------------------------------")
+        total += subtotal
+    print(f"Cliente: {cliente_encontrado._nombre}")
+    print(f"Código de cliente: {cliente_encontrado._codigo_cliente}")
+    print(f"TOTAL A PAGAR: S/ {total:.2f}")
+    confirmar = input("\n¿Este es el pedido que desea registrar? (si/no): ").lower()
+    if confirmar == "si":
+        codigo_pedido = len(restaurante._pedidos) + 1
+        pedido = Pedido(cliente_encontrado, codigo_pedido)
+        pedido._platos.extend(pedido_actual)
+        mesa_elegida._ocupada = True
+        pedido._mesa = mesa_elegida
+        restaurante._pedidos.append(pedido)
+        print("""
+╔════════════════════════════════════════════════════╗
+║                 REGISTRO EXITOSO                   ║
+╚════════════════════════════════════════════════════╝
+""")
+        print(f"Código del pedido: PED-{codigo_pedido:03d}")
+        print(f"Cliente: {cliente_encontrado._nombre}")
+        print(f"Mesa: {mesa_elegida._numero}")
+        print(f"Total registrado: S/ {total:.2f}")
+    else:
+        print("\nEl pedido no fue registrado.")
+def consultar_pedido():
+    print("""
+╔════════════════════════════════════════════════════╗
+║                 CONSULTAR PEDIDO                   ║
+╚════════════════════════════════════════════════════╝
+""")
+    if len(restaurante._pedidos) == 0:
+        print("No existen pedidos registrados.")
+        return
+    codigo = int(input("Ingrese el número del pedido: "))
+    encontrado = False
+    for pedido in restaurante._pedidos:
+        if pedido._codigo == codigo:
+            encontrado = True
+            print(f"\nCódigo del pedido: PED-{pedido._codigo:03d}")
+            print(f"Cliente: {pedido._cliente._nombre}")
+            print(f"Código del cliente: {pedido._cliente._codigo_cliente}")
+            print("--------------------------------------")
+            total = 0
+            for plato, cantidad, subtotal in pedido._platos:
+                if isinstance(plato, Extra):
+                    print(f"Extra: {plato.nombre}")
+                else:
+                    print(f"Plato: {plato._nombre}")
+                print(f"Cantidad: {cantidad}")
+                print(f"Subtotal: S/ {subtotal:.2f}")
+                print("--------------------------------------")
+                total += subtotal
+            print(f"TOTAL A PAGAR: S/ {total:.2f}")
+            break
+    if encontrado == False:
+        print("No se encontró el pedido.")
+def historial_ventas():
+    print("""
+╔════════════════════════════════════════════════════╗
+║               HISTORIAL DE VENTAS                  ║
+╚════════════════════════════════════════════════════╝
+""")
+    if len(restaurante._pedidos) == 0:
+        print("No existen ventas registradas.")
+        return
+    total_ventas = 0
+    for pedido in restaurante._pedidos:
+        print(f"Código del pedido: PED-{pedido._codigo:03d}")
+        print(f"Cliente: {pedido._cliente._nombre}")
+        print(f"Código del cliente: {pedido._cliente._codigo_cliente}")
+        print(f"Mesa: {pedido._mesa._numero}")
+        print("--------------------------------------")
+        total = 0
+        for plato, cantidad, subtotal in pedido._platos:
+            if isinstance(plato, Extra):
+                print(f"Extra: {plato.nombre}")
+            else:
+                print(f"Plato: {plato._nombre}")
+            print(f"Cantidad: {cantidad}")
+            print(f"Subtotal: S/ {subtotal:.2f}")
+            print("--------------------------------------")
+            total += subtotal
+        print(f"TOTAL DEL PEDIDO: S/ {total:.2f}")
+        print("======================================\n")
+        total_ventas += total
+    print(f"TOTAL DE PEDIDOS: {len(restaurante._pedidos)}")
+    print(f"TOTAL DE VENTAS: S/ {total_ventas:.2f}")
+while True:
+    continuar = seleccionar_opcion()
+    if continuar == False:
+        break
